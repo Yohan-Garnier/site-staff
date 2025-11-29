@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulaire de réforme — Exiled RP [WL]</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link rel="stylesheet" href="css/style.css" />
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script>
+    protectPage((user) => console.log('Connecté :', user.email));
+  </script>
+  <style>
+    .form-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: rgba(18, 18, 26, 0.75);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(106, 90, 249, 0.3);
+      backdrop-filter: blur(8px);
+    }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #c5c6e0;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.8rem;
+      background: rgba(10, 10, 16, 0.7);
+      border: 1px solid rgba(106, 90, 249, 0.4);
+      border-radius: 6px;
+      color: #e0e0ff;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn { margin-top: 1rem; }
+    #status { margin-top: 1rem; text-align: center; }
+    .success { color: #80ffaa; }
+    .error { color: #ff8080; }
+  </style>
+</head>
+<body>
+
+  <!-- Hamburger & Sidebar -->
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">Exiled RP [WL]</div>
+      <button class="close-btn" id="close-sidebar">×</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="staff.html">Accueil</a>
+      <a href="ticket.html">Ticket</a>
+      <a href="serveurblacklist.html">Serveur BLACKLIST</a>
+      <a href="referentielsanction.html">Référentiel de sanction</a>
+      <a href="demandedeban.html">Demande de débannissement</a>
+      <a href="absence.html">Faire une absence</a>
+      <a href="sanction.html">Nouvelle sanction</a>
+      <a href="sanctionhistorique.html">Historique de sanction</a>
+      <a href="reforme.html">Demande de réforme</a>
+      <a href="mnémotechnique.html">Mnémotechnique</a>
+      <a href="demission.html">Démission</a>
+      <a href="mon-compte.html"><strong>Mon compte</strong></a>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main>
+    <div class="form-container">
+      <h2>🔧 Formulaire de réforme</h2>
+      <form id="reformeForm">
+        <div class="form-group">
+          <label>Type de réforme <span class="required-asterisk">*</span></label>
+          <select id="type" class="form-input" required>
+            <option value="">– Sélectionner –</option>
+            <option value="Système de grade">Système de grade</option>
+            <option value="Règles du serveur">Règles du serveur</option>
+            <option value="Système de sanctions">Système de sanctions</option>
+            <option value="Interface staff">Interface staff</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Motif de la réforme <span class="required-asterisk">*</span></label>
+          <textarea id="motif" class="form-input" rows="4" placeholder="Expliquez votre proposition de réforme en détail..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Preuves ou exemples (lien)</label>
+          <input type="text" id="preuves" class="form-input" placeholder="https://..." />
+        </div>
+        <button type="submit" class="btn primary">Soumettre la réforme</button>
+      </form>
+      <div id="status"></div>
+    </div>
+  </main>
+
+  <script>
+    // Initialiser Firebase
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let isSubmitting = false;
+
+    document.getElementById('reformeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (isSubmitting) {
+        document.getElementById('status').innerHTML = '<p class="error">⏰ Veuillez attendre avant de soumettre une nouvelle réforme.</p>';
+        return;
+      }
+
+      isSubmitting = true;
+
+      const user = auth.currentUser;
+      if (!user) return alert("Non connecté.");
+
+      const doc = await db.collection('users').doc(user.uid).get();
+      if (!doc.exists) return alert("Profil introuvable.");
+
+      const staffData = doc.data();
+      const reforme = {
+        type: document.getElementById('type').value,
+        motif: document.getElementById('motif').value.trim(),
+        preuves: document.getElementById('preuves').value.trim() || null,
+        staff: {
+          uid: user.uid,
+          email: user.email,
+          pseudo: staffData.username || 'Inconnu',
+          grade: staffData.grade || 'Inconnu',
+          discordId: staffData.discordId || 'Inconnu',
+          pseudoRoblox: staffData.pseudoRoblox || 'Inconnu'
+        },
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      // 🔥 Envoi à Firestore
+      const docRef = await db.collection('reformes').add(reforme);
+
+      // 🔥 Webhook principal
+      const webhookURL = 'https://discord.com/api/webhooks/1440960539764461598/HCGRhtKzORj86ohLWhpRkeSEBUOG1E-6b2PUvFkEfq8P0ZDkgmsWXQR4v-i2M601-R1s';
+      const roleID = '1439281137531752482';
+      const logsWebhookURL = 'https://discord.com/api/webhooks/1440759750739365998/brQgi-0X8VY7b6bP1AZpCCwc9luyL0M9jeShf8YufTWsibvqyXW9vV01DngaOOpueUms';
+
+      const embed = {
+        title: "🔧 Nouvelle réforme proposée",
+        fields: [
+          { name: "📄 Type", value: reforme.type, inline: true },
+          { name: "📝 Motif", value: reforme.motif, inline: false },
+          { name: "🛡️ Modérateur", value: `${reforme.staff.pseudo} (${reforme.staff.grade})`, inline: false },
+          { name: "📧 Email", value: reforme.staff.email, inline: true },
+          { name: "🤖 Discord ID", value: reforme.staff.discordId, inline: true },
+          { name: "🎮 Roblox", value: reforme.staff.pseudoRoblox, inline: false },
+          ...(reforme.preuves ? [{ name: "📸 Preuves", value: reforme.preuves, inline: false }] : [])
+        ],
+        color: 3381759,
+        footer: { text: `ID: ${docRef.id}` }
+      };
+
+      // Webhook de logs
+      const logEmbed = {
+        title: "📝 Nouvelle réforme (log)",
+        fields: [
+          { name: "📄 Type", value: reforme.type, inline: true },
+          { name: "🛡️ Modérateur", value: `${reforme.staff.pseudo} (${reforme.staff.grade})`, inline: false },
+          { name: "📧 Email", value: reforme.staff.email, inline: true },
+          { name: "🆔 UID", value: reforme.staff.uid, inline: true },
+        ],
+        color: 8454143,
+        footer: { text: `Exiled RP [WL] • Logs automatiques` }
+      };
+
+      // Envoyer les deux webhooks
+      Promise.all([
+        fetch(webhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: `<@&${roleID}>`, embeds: [embed] }) }),
+        fetch(logsWebhookURL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embeds: [logEmbed] }) })
+      ]).then(() => {
+        document.getElementById('status').innerHTML = '<p class="success">✅ Réforme soumise avec succès !</p>';
+        document.getElementById('reformeForm').reset();
+      }).catch(err => {
+        console.error(err);
+        document.getElementById('status').innerHTML = '<p class="error">❌ Erreur d’envoi.</p>';
+      }).finally(() => {
+        setTimeout(() => isSubmitting = false, 5000); // 5 secondes de délai
+      });
+    });
+
+    // Gestion du menu hamburger
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    if (hamburger) hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+
+    if (overlay) overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Démission — Exiled RP [WL]</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <!-- Firebase COMPAT -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<!-- Auth Guard -->
+<script src="js/auth-guard.js"></script>
+
+<script>
+  // Initialiser la protection
+  protectPage((user) => {
+    console.log('Utilisateur connecté :', user.email);
+  });
+</script>
+  <style>
+    body {
+      background-color: #0f0f14;
+      color: #e0e0ff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+    .redirect-container {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(18, 18, 26, 0.7);
+      border: 1px solid rgba(106, 90, 249, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      max-width: 600px;
+      animation: fadeIn 1s ease-out;
+    }
+    .redirect-container h1 {
+      color: #6a5af9;
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+    }
+    .redirect-container p {
+      color: #a9a9d6;
+      margin: 0.5rem 0;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #c5c6e0;
+      font-size: 0.95rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.85rem;
+      background: rgba(10, 10, 16, 0.7);
+      border: 1px solid rgba(106, 90, 249, 0.4);
+      border-radius: 6px;
+      color: #e0e0ff;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: #6a5af9;
+      box-shadow: 0 0 0 2px rgba(106, 90, 249, 0.3);
+    }
+    .btn {
+      margin-top: 0.5rem;
+    }
+    .status {
+      margin-top: 1rem;
+      padding: 0.7rem;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .status.success { background: rgba(0, 200, 100, 0.2); color: #80ffaa; }
+    .status.error { background: rgba(255, 80, 80, 0.2); color: #ff8080; }
+  </style>
+</head>
+<body>
+
+      <!-- Hamburger & Sidebar (identiques partout) -->
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">Exiled RP [WL]</div>
+      <button class="close-btn" id="close-sidebar">×</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="staff.html">Accueil</a>
+      <a href="serveurblacklist.html">Serveur BLACKLIST</a>
+      <a href="referentielsanction.html">Référentiel de sanction</a>
+      <a href="demandedeban.html">Demande de débannissement</a>
+      <a href="absence.html">Faire une absence</a>
+      <a href="sanction.html">Nouvelle sanction</a>
+      <a href="sanctionhistorique.html">Historique de sanction</a>
+      <a href="mnémotechnique.html">Mnémotechnique</a>
+      <a href="demission.html">Démission</a>
+      <a href="mon-compte.html"><strong>Mon compte</strong></a>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="redirect-container">
+  <div class="recruitment-header">
+  <img src="header.png" alt="Exiled RP [WL]" />
+  </div>
+    <h1>📤 Formulaire de démission</h1>
+    <p>Remplissez le formulaire ci-dessous pour nous informer de votre départ.</p>
+
+    <form id="resignationForm">
+      <div class="form-group">
+        <label for="motif">Motif de la démission <span class="required-asterisk">*</span></label>
+        <input type="text" id="motif" class="form-input" placeholder="Ex: Manque de temps, désintérêt..." required />
+      </div>
+
+      <div class="form-group">
+        <label> Êtes-vous sûr(e) de vouloir démissionner ? <span class="required-asterisk">*</span></label>
+        <div style="display: flex; gap: 20px; margin-top: 8px;">
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="radio" name="confirmation" value="Oui" required style="margin-right: 6px;">
+            Oui
+          </label>
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="radio" name="confirmation" value="Non" required style="margin-right: 6px;">
+            Non
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn primary">Soumettre ma démission</button>
+    </form>
+
+    <div id="status-message"></div>
+  </div>
+
+  <!-- 🔥 Firebase COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcB45diMSO7rWWzp25EdqLHrhgENM7jj0",
+      authDomain: "marseille-rp-73905.firebaseapp.com",
+      projectId: "marseille-rp-73905",
+      storageBucket: "marseille-rp-73905.firebasestorage.app",
+      messagingSenderId: "633653493501",
+      appId: "1:633653493501:web:94210bcc5a99d6fd114894"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function showStatus(message, isSuccess = true) {
+      const el = document.getElementById('status-message');
+      el.className = `status ${isSuccess ? 'success' : 'error'}`;
+      el.innerHTML = message;
+      setTimeout(() => el.innerHTML = '', 5000);
+    }
+
+    document.getElementById('resignationForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const motifElement = document.getElementById('motif');
+      const confirmationElement = document.querySelector('input[name="confirmation"]:checked');
+
+      if (!motifElement || !confirmationElement) {
+        showStatus('❌ Veuillez remplir tous les champs.', false);
+        return;
+      }
+
+      const motif = motifElement.value;
+      const confirmation = confirmationElement.value;
+
+      if (confirmation !== "Oui") {
+        showStatus('❌ Vous devez confirmer votre démission.', false);
+        return;
+      }
+
+      // Récupérer les infos du compte connecté
+      const user = auth.currentUser;
+      if (!user) {
+        showStatus('❌ Vous devez être connecté pour envoyer ce formulaire.', false);
+        return;
+      }
+
+      // Vérifier si une démission a été faite dans les dernières 24h
+      const lastResignation = await db.collection('resignations').where('userUID', '==', user.uid).orderBy('timestamp', 'desc').limit(1).get();
+      if (!lastResignation.empty) {
+        const lastDoc = lastResignation.docs[0];
+        const lastDate = lastDoc.data().timestamp.toDate();
+        const now = new Date();
+        const diffInHours = (now - lastDate) / (1000 * 60 * 60);
+        if (diffInHours < 24) {
+          showStatus('⏰ Vous avez déjà envoyé une démission il y a moins de 24h.', false);
+          return;
+        }
+      }
+
+      // Récupérer les infos Firestore
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) {
+        showStatus('❌ Données utilisateur manquantes.', false);
+        return;
+      }
+
+      const userData = userDoc.data();
+      const userEmail = user.email;
+      const userUID = user.uid;
+      const username = userData.username || 'Aucun';
+      const discordId = userData.discordId || 'Aucun';
+      const pseudoRoblox = userData.pseudoRoblox || 'Aucun';
+      const grade = userData.grade || 'Aucun';
+      const createdAt = userData.createdAt ? userData.createdAt.toDate().toLocaleDateString() : 'Aucune';
+
+      // 🔥 REMPLACEZ CES VALEURS AVEC LES VOTRES !
+      const webhookURL = 'https://discord.com/api/webhooks/1436066246972936307/sD8L9z-ZGJ0k68d1YpkAhSjeC2YPafUYUkafUVhiinDgVFmA9ywZxEk5QOFajHmJ1lqX';
+      const roleID = '1436066480205598740';
+      const logsWebhookURL = 'https://discord.com/api/webhooks/1440759750739365998/brQgi-0X8VY7b6bP1AZpCCwc9luyL0M9jeShf8YufTWsibvqyXW9vV01DngaOOpueUms';
+
+      // Webhook principal (mentionne le rôle)
+      const payload = {
+          content: `<@&${roleID}> Nouvelle démission !`,
+          embeds: [{
+              title: "📤 Démission reçue",
+              fields: [
+                  { name: "👤 Pseudo Discord", value: username, inline: true },
+                  { name: "🤖 Pseudo Roblox", value: pseudoRoblox, inline: true },
+                  { name: "🎖️ Grade", value: grade, inline: false },
+                  { name: "📧 Email", value: userEmail, inline: false },
+                  { name: "🤖 ID Discord", value: discordId, inline: false },
+                  { name: "📅 Date de création du compte", value: createdAt, inline: false },
+                  { name: "📝 Motif", value: motif, inline: false }
+              ],
+              color: 16711680, // Rouge
+              footer: { text: `Exiled RP [WL] • UID: ${userUID}` }
+          }]
+      };
+
+      // Webhook de logs
+      const logPayload = {
+        embeds: [{
+          title: "📝 Nouvelle réponse de formulaire",
+          fields: [
+            { name: "👤 Pseudo Discord", value: username, inline: true },
+            { name: "📧 Email", value: userEmail, inline: true },
+            { name: "📄 Formulaire", value: "Démission", inline: false },
+            { name: "📝 Motif", value: motif, inline: false }
+          ],
+          color: 16711680, // Rouge
+          footer: { text: "Exiled RP [WL] • Logs automatiques" }
+        }]
+      };
+
+      // Enregistrer la démission dans Firestore
+      await db.collection('resignations').add({
+        userUID: user.uid,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      // Envoyer les deux webhooks
+      Promise.all([
+        fetch(webhookURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }),
+        fetch(logsWebhookURL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(logPayload)
+        })
+      ])
+      .then(([response1, response2]) => {
+        if (response1.ok && response2.ok) {
+          // Désactiver le compte dans Firestore
+          return db.collection('users').doc(user.uid).update({
+            deactivated: true,
+            deactivationDate: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } else {
+          throw new Error('Erreur réseau ou webhook incorrect.');
+        }
+      })
+      .then(() => {
+        showStatus('✅ Votre démission a été envoyée et votre compte désactivé.');
+        this.reset();
+        setTimeout(() => {
+          auth.signOut().then(() => window.location.href = 'login.html');
+        }, 2000);
+      })
+      .catch(err => {
+        console.error(err);
+        showStatus('❌ Erreur lors de l’envoi. Vérifiez votre connexion.', false);
+      });
+    });
+
+    // Gestion du menu hamburger
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    if (hamburger) hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+
+    if (overlay) overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>

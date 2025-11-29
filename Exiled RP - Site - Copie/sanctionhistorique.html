@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Historique des sanctions — Exiled RP [WL]</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link rel="stylesheet" href="css/style.css" />
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    .controls input, .controls select {
+      padding: 0.6rem;
+      background: rgba(10,10,16,0.7);
+      border: 1px solid rgba(106,90,249,0.4);
+      color: #e0e0ff;
+      border-radius: 6px;
+      min-width: 200px;
+    }
+    .player-card {
+      background: rgba(18,18,26,0.5);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .player-card h3 {
+      color: #6a5af9;
+      margin-bottom: 0.5rem;
+    }
+    .sanctions-list {
+      display: none;
+      margin-top: 1rem;
+      padding-left: 1.5rem;
+    }
+    .sanction-item {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(106,90,249,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hamburger & Sidebar -->
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">Exiled RP [WL]</div>
+      <button class="close-btn" id="close-sidebar">×</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="staff.html">Accueil</a>
+      <a href="serveurblacklist.html">Serveur BLACKLIST</a>
+      <a href="referentielsanction.html">Référentiel de sanction</a>
+      <a href="demandedeban.html">Demande de débannissement</a>
+      <a href="absence.html">Faire une absence</a>
+      <a href="sanction.html">Nouvelle sanction</a>
+      <a href="sanctionhistorique.html">Historique de sanction</a>
+      <a href="mnémotechnique.html">Mnémotechnique</a>
+      <a href="demission.html">Démission</a>
+      <a href="mon-compte.html"><strong>Mon compte</strong></a>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main>
+    <section class="section">
+  <div class="recruitment-header">
+  <img src="header.png" alt="Exiled RP [WL]" />
+  </div>
+      <h2>📜 Historique des sanctions</h2>
+
+      <div class="controls">
+        <input type="text" id="searchInput" placeholder="Rechercher un joueur ou modérateur..." />
+        <select id="filterType">
+          <option value="">Tous les types</option>
+          <option value="Avertissement Oral">Avertissement Oral</option>
+          <option value="Avertissement Écrit">Avertissement Écrit</option>
+          <option value="Kick/Warn">Kick/Warn</option>
+          <option value="Bannissement temporaire">Bannissement temporaire</option>
+          <option value="Demande de bannissement définitif">Demande de bannissement définitif</option>
+        </select>
+        <select id="filterModerator">
+          <option value="">Tous les modérateurs</option>
+          <!-- Sera rempli dynamiquement -->
+        </select>
+      </div>
+
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcB45diMSO7rWWzp25EdqLHrhgENM7jj0",
+      authDomain: "marseille-rp-73905.firebaseapp.com",
+      projectId: "marseille-rp-73905",
+      storageBucket: "marseille-rp-73905.firebasestorage.app",
+      messagingSenderId: "633653493501",
+      appId: "1:633653493501:web:94210bcc5a99d6fd114894"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let allSanctions = [];
+    let moderatorsSet = new Set();
+
+    // 🔐 Vérification d'authentification
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        alert("⚠️ Vous devez être connecté pour accéder à cette page.");
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Charger les sanctions une fois connecté
+      loadSanctions();
+    });
+
+    function loadSanctions() {
+      db.collection('sanctions')
+        .orderBy('timestamp', 'desc')
+        .onSnapshot(snapshot => {
+          allSanctions = [];
+          moderatorsSet.clear();
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            data.id = doc.id;
+            data.date = data.timestamp?.toDate().toLocaleString() || 'Inconnue';
+            allSanctions.push(data);
+            if (data.staff?.pseudo) moderatorsSet.add(data.staff.pseudo);
+          });
+
+          // Mettre à jour le menu des modérateurs
+          const modSelect = document.getElementById('filterModerator');
+          modSelect.innerHTML = '<option value="">Tous les modérateurs</option>';
+          [...moderatorsSet].sort().forEach(mod => {
+            const opt = document.createElement('option');
+            opt.value = mod;
+            opt.textContent = mod;
+            modSelect.appendChild(opt);
+          });
+
+          renderSanctions();
+        });
+    }
+
+    function renderSanctions() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const typeFilter = document.getElementById('filterType').value;
+      const modFilter = document.getElementById('filterModerator').value;
+
+      const grouped = {};
+      allSanctions
+        .filter(s => {
+          const matchSearch = s.targetPseudo.toLowerCase().includes(search) || (s.staff?.pseudo || '').toLowerCase().includes(search);
+          const matchType = !typeFilter || s.type === typeFilter;
+          const matchMod = !modFilter || (s.staff?.pseudo || '') === modFilter;
+          return matchSearch && matchType && matchMod;
+        })
+        .forEach(sanction => {
+          const key = sanction.targetPseudo.toLowerCase();
+          if (!grouped[key]) grouped[key] = { name: sanction.targetPseudo, sanctions: [] };
+          grouped[key].sanctions.push(sanction);
+        });
+
+      const results = document.getElementById('results');
+      results.innerHTML = '';
+
+      Object.values(grouped).forEach(group => {
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.innerHTML = `<h3>${group.name} (${group.sanctions.length} sanction${group.sanctions.length > 1 ? 's' : ''})</h3>`;
+        
+        const list = document.createElement('div');
+        list.className = 'sanctions-list';
+        group.sanctions.forEach(s => {
+          const item = document.createElement('div');
+          item.className = 'sanction-item';
+          item.innerHTML = `
+            <strong>${s.type}</strong> — ${s.motif}  
+            <br><small>Par ${s.staff?.pseudo || 'Inconnu'} • ${s.date}</small>
+            ${s.duree ? `<br><small>⏳ Durée : ${s.duree}</small>` : ''}
+            ${s.preuves ? `<br><a href="${s.preuves}" target="_blank" style="color:#6a5af9;">📸 Preuves</a>` : ''}
+          `;
+          list.appendChild(item);
+        });
+        card.appendChild(list);
+        card.addEventListener('click', () => {
+          list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        });
+        results.appendChild(card);
+      });
+    }
+
+    // 🔍 Écouteurs pour la recherche et les filtres
+    document.getElementById('searchInput').addEventListener('input', renderSanctions);
+    document.getElementById('filterType').addEventListener('change', renderSanctions);
+    document.getElementById('filterModerator').addEventListener('change', renderSanctions);
+
+    // 📱 Gestion du menu hamburger
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    if (hamburger) hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+
+    if (overlay) overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>

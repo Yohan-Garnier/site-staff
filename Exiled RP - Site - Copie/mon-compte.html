@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mon Compte —  Exiled RP [WL]</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <style>
+    .account-form {
+      background: rgba(18, 18, 26, 0.75);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(106, 90, 249, 0.3);
+      backdrop-filter: blur(8px);
+      max-width: 600px;
+      margin: 0 auto;
+      animation: fadeInUp 1s ease-out;
+    }
+    .account-form h2 {
+      color: #6a5af9;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #c5c6e0;
+      font-size: 0.95rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.85rem;
+      background: rgba(10, 10, 16, 0.7);
+      border: 1px solid rgba(106, 90, 249, 0.4);
+      border-radius: 6px;
+      color: #e0e0ff;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: #6a5af9;
+      box-shadow: 0 0 0 2px rgba(106, 90, 249, 0.3);
+    }
+    .btn {
+      margin-top: 0.5rem;
+    }
+    .status {
+      margin-top: 1rem;
+      padding: 0.7rem;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .status.success { background: rgba(0, 200, 100, 0.2); color: #80ffaa; }
+    .status.error { background: rgba(255, 80, 80, 0.2); color: #ff8080; }
+  </style>
+</head>
+<body>
+
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">Marseille RP [WL]</div>
+      <button class="close-btn" id="close-sidebar">×</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="staff.html">Accueil</a>
+      <a href="ticket.html">Ticket</a>
+      <a href="serveurblacklist.html">Serveur BLACKLIST</a>
+      <a href="referentielsanction.html">Référentiel de sanction</a>
+      <a href="demandedeban.html">Demande de débannissement</a>
+      <a href="absence.html">Faire une absence</a>
+      <a href="sanction.html">Nouvelle sanction</a>
+      <a href="sanctionhistorique.html">Historique de sanction</a>
+      <a href="mnémotechnique.html">Mnémotechnique</a>
+      <a href="demission.html">Démission</a>
+      <a href="mon-compte.html"><strong>Mon compte</strong></a>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main>
+    <section class="section">
+      <div class="account-form">
+        <h2>👤 Mon Compte</h2>
+        <p style="color: #a9a9d6; margin-bottom: 1.5rem;">
+          Connecté en tant que : <strong id="current-email"></strong>
+        </p>
+
+        <!-- Affichage des infos utilisateur -->
+        <div class="form-group">
+          <label for="current-username">Nom d'utilisateur</label>
+          <input type="text" id="current-username" class="form-input" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="current-discordId">ID Discord</label>
+          <input type="text" id="current-discordId" class="form-input" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="current-pseudoRoblox">Pseudo Roblox</label>
+          <input type="text" id="current-pseudoRoblox" class="form-input" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="current-grade">Grade</label>
+          <input type="text" id="current-grade" class="form-input" readonly />
+        </div>
+
+        <!-- Modifier le nom d'utilisateur -->
+        <div class="form-group">
+          <label for="newUsername">Changer de nom d'utilisateur</label>
+          <input type="text" id="newUsername" class="form-input" placeholder="nouveauNom" />
+          <button onclick="updateUsername()" class="btn primary">Mettre à jour le nom</button>
+        </div>
+
+        <!-- Modifier l'ID Discord -->
+        <div class="form-group">
+          <label for="newDiscordId">Changer d'ID Discord</label>
+          <input type="text" id="newDiscordId" class="form-input" placeholder="ID Discord" />
+          <button onclick="updateDiscordId()" class="btn primary">Mettre à jour l'ID Discord</button>
+        </div>
+
+        <!-- Modifier l'email -->
+        <div class="form-group">
+          <label for="newEmail">Changer d'email</label>
+          <input type="email" id="newEmail" class="form-input" placeholder="nouveau@email.com" />
+          <button onclick="updateEmail()" class="btn primary">Mettre à jour l'email</button>
+        </div>
+
+        <!-- Modifier le mot de passe -->
+        <div class="form-group">
+          <label for="oldPassword">Ancien mot de passe</label>
+          <input type="password" id="oldPassword" class="form-input" />
+          <label for="newPassword">Nouveau mot de passe</label>
+          <input type="password" id="newPassword" class="form-input" />
+          <button onclick="updatePassword()" class="btn primary">Mettre à jour le mot de passe</button>
+        </div>
+
+        <div id="status-message"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Exiled RP [WL] — Tous droits réservés.</p>
+  </footer>
+
+  <!-- 🔥 Firebase COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcB45diMSO7rWWzp25EdqLHrhgENM7jj0",
+      authDomain: "marseille-rp-73905.firebaseapp.com",
+      projectId: "marseille-rp-73905",
+      storageBucket: "marseille-rp-73905.firebasestorage.app",
+      messagingSenderId: "633653493501",
+      appId: "1:633653493501:web:94210bcc5a99d6fd114894"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function showStatus(message, isSuccess = true) {
+      const el = document.getElementById('status-message');
+      el.className = `status ${isSuccess ? 'success' : 'error'}`;
+      el.textContent = message;
+      setTimeout(() => el.textContent = '', 5000);
+    }
+
+    // 🔐 Vérifier que l'utilisateur est connecté et charger les données
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById('current-email').textContent = user.email;
+        // Charger les infos Firestore
+        db.collection('users').doc(user.uid).get().then(doc => {
+          if (doc.exists) {
+            const data = doc.data();
+            document.getElementById('current-username').value = data.username || 'Aucun';
+            document.getElementById('current-discordId').value = data.discordId || 'Aucun';
+            document.getElementById('current-pseudoRoblox').value = data.pseudoRoblox || 'Aucun';
+            document.getElementById('current-grade').value = data.grade || 'Aucun';
+          }
+        });
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // 📝 Modifier le nom d'utilisateur
+    window.updateUsername = async function() {
+      const newUsername = document.getElementById('newUsername').value.trim();
+      if (!newUsername) return showStatus('Veuillez entrer un nom d’utilisateur.', false);
+
+      const user = auth.currentUser;
+      if (!user) return showStatus('Session expirée.', false);
+
+      const oldUsername = document.getElementById('current-username').value;
+      db.collection('users').doc(user.uid).update({
+        username: newUsername
+      })
+      .then(() => {
+        showStatus('✅ Nom d’utilisateur mis à jour !');
+        document.getElementById('current-username').value = newUsername;
+        document.getElementById('newUsername').value = '';
+
+        // 🔥 Envoyer un webhook Discord
+        sendWebhookLog('Modification de compte', {
+          action: 'Nom d’utilisateur modifié',
+          old: oldUsername,
+          new: newUsername,
+          email: user.email,
+          uid: user.uid
+        });
+      })
+      .catch((error) => {
+        showStatus('Erreur : ' + error.message, false);
+      });
+    };
+
+    // 🤖 Modifier l'ID Discord
+    window.updateDiscordId = async function() {
+      const newDiscordId = document.getElementById('newDiscordId').value.trim();
+      if (!newDiscordId) return showStatus('Veuillez entrer un ID Discord.', false);
+
+      if (!isValidDiscordId(newDiscordId)) {
+        return showStatus('⚠️ ID Discord invalide.', false);
+      }
+
+      const user = auth.currentUser;
+      if (!user) return showStatus('Session expirée.', false);
+
+      const oldDiscordId = document.getElementById('current-discordId').value;
+      db.collection('users').doc(user.uid).update({
+        discordId: newDiscordId
+      })
+      .then(() => {
+        showStatus('✅ ID Discord mis à jour !');
+        document.getElementById('current-discordId').value = newDiscordId;
+        document.getElementById('newDiscordId').value = '';
+
+        // 🔥 Envoyer un webhook Discord
+        sendWebhookLog('Modification de compte', {
+          action: 'ID Discord modifié',
+          old: oldDiscordId,
+          new: newDiscordId,
+          email: user.email,
+          uid: user.uid
+        });
+      })
+      .catch((error) => {
+        showStatus('Erreur : ' + error.message, false);
+      });
+    };
+
+    // Fonction utilitaire pour valider l'ID Discord (18 chiffres)
+    function isValidDiscordId(id) {
+      const re = /^\d{17,19}$/;
+      return re.test(id);
+    }
+
+    // 📧 Modifier l'email
+    window.updateEmail = async function() {
+      const newEmail = document.getElementById('newEmail').value.trim();
+      if (!newEmail) return showStatus('Veuillez entrer un email.', false);
+
+      const user = auth.currentUser;
+      if (!user) return showStatus('Session expirée.', false);
+
+      const oldEmail = user.email;
+      user.updateEmail(newEmail)
+        .then(() => {
+          showStatus('✅ Email mis à jour !');
+          document.getElementById('current-email').textContent = newEmail;
+
+          // 🔥 Envoyer un webhook Discord
+          sendWebhookLog('Modification de compte', {
+            action: 'Email modifié',
+            old: oldEmail,
+            new: newEmail,
+            uid: user.uid
+          });
+
+          document.getElementById('newEmail').value = '';
+        })
+        .catch((error) => {
+          let msg = error.message;
+          if (msg.includes('invalid-email')) msg = '📧 Email invalide.';
+          else if (msg.includes('email-already-in-use')) msg = '📧 Cet email est déjà utilisé.';
+          else msg = 'Erreur : ' + msg;
+          showStatus(msg, false);
+        });
+    };
+
+    // 🔑 Modifier le mot de passe
+    window.updatePassword = async function() {
+      const oldPass = document.getElementById('oldPassword').value;
+      const newPass = document.getElementById('newPassword').value;
+      if (!oldPass || !newPass) return showStatus('Tous les champs sont requis.', false);
+      if (newPass.length < 6) return showStatus('🔑 Le mot de passe doit avoir au moins 6 caractères.', false);
+
+      const user = auth.currentUser;
+      if (!user) return showStatus('Session expirée.', false);
+
+      // 🔁 Réauthentifier l'utilisateur (obligatoire pour updatePassword)
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPass);
+      user.reauthenticateWithCredential(credential)
+        .then(() => user.updatePassword(newPass))
+        .then(() => {
+          showStatus('✅ Mot de passe mis à jour !');
+          document.getElementById('oldPassword').value = '';
+          document.getElementById('newPassword').value = '';
+
+          // 🔥 Envoyer un webhook Discord
+          sendWebhookLog('Modification de compte', {
+            action: 'Mot de passe modifié',
+            email: user.email,
+            uid: user.uid
+          });
+        })
+        .catch((error) => {
+          let msg = error.message;
+          if (msg.includes('wrong-password')) msg = '🔒 Ancien mot de passe incorrect.';
+          else if (msg.includes('user-mismatch')) msg = '🔒 Utilisateur non reconnu.';
+          else msg = 'Erreur : ' + msg;
+          showStatus(msg, false);
+        });
+    };
+
+    // Fonction pour envoyer un webhook Discord
+    function sendWebhookLog(action, data) {
+      const webhookURL = 'https://discord.com/api/webhooks/1440759750739365998/brQgi-0X8VY7b6bP1AZpCCwc9luyL0M9jeShf8YufTWsibvqyXW9vV01DngaOOpueUms';
+
+      const payload = {
+        embeds: [{
+          title: `📝 ${action}`,
+          fields: [
+            { name: "📧 Email", value: data.email || 'N/A', inline: true },
+            { name: "🆔 UID", value: data.uid, inline: true },
+            { name: "🔄 Modification", value: data.action, inline: false },
+            ...(data.old !== undefined && data.new !== undefined ? [
+              { name: "➡️ Ancien", value: data.old, inline: true },
+              { name: "➡️ Nouveau", value: data.new, inline: true }
+            ] : [])
+          ],
+          color: 3381759,
+          footer: { text: "Exiled RP [WL] • Logs automatiques" }
+        }]
+      };
+
+      fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).catch(err => console.error('Erreur webhook:', err));
+    }
+
+    // 🚪 Déconnexion globale
+    window.signOut = function() {
+      auth.signOut().then(() => window.location.href = 'login.html');
+    };
+  </script>
+
+  <!-- Sidebar JS -->
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    if (hamburger) hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+
+    if (overlay) overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>

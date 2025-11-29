@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Référentiel de sanctions — Exiled RP [WL]</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link rel="stylesheet" href="css/style.css" />
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="js/auth-guard.js"></script>
+  <script>
+    protectPage((user) => console.log('Connecté :', user.email));
+  </script>
+  <style>
+    .ref-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: rgba(18, 18, 26, 0.75);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(106, 90, 249, 0.3);
+      backdrop-filter: blur(8px);
+    }
+    .search-bar {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1.5rem;
+      background: rgba(10, 10, 16, 0.7);
+      border: 1px solid rgba(106, 90, 249, 0.4);
+      border-radius: 6px;
+      color: #e0e0ff;
+      font-size: 1rem;
+    }
+    .category {
+      margin: 2rem 0;
+    }
+    .category h3 {
+      color: #6a5af9;
+      border-left: 4px solid #6a5af9;
+      padding-left: 10px;
+      margin: 1rem 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    th, td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(106, 90, 249, 0.2);
+    }
+    th {
+      background-color: rgba(106, 90, 249, 0.1);
+      color: #c5c6e0;
+    }
+    tr:hover {
+      background-color: rgba(106, 90, 249, 0.05);
+    }
+    .no-result {
+      text-align: center;
+      color: #a9a9d6;
+      font-style: italic;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hamburger & Sidebar -->
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">Exiled RP [WL]</div>
+      <button class="close-btn" id="close-sidebar">×</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="staff.html">Accueil</a>
+      <a href="ticket.html">Ticket</a>
+      <a href="serveurblacklist.html">Serveur BLACKLIST</a>
+      <a href="referentielsanction.html">Référentiel de sanction</a>
+      <a href="demandedeban.html">Demande de débannissement</a>
+      <a href="absence.html">Faire une absence</a>
+      <a href="sanction.html">Nouvelle sanction</a>
+      <a href="sanctionhistorique.html">Historique de sanction</a>
+      <a href="reforme.html">Demande de réforme</a>
+      <a href="mnémotechnique.html">Mnémotechnique</a>
+      <a href="demission.html">Démission</a>
+      <a href="mon-compte.html"><strong>Mon compte</strong></a>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main>
+    <section class="section">
+      <div class="ref-container">
+        <h2>📜 Référentiel de sanctions</h2>
+        <input type="text" id="searchSanctions" class="search-bar" placeholder="Rechercher un motif..." />
+
+        <div id="results"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Ton référentiel de sanctions (inséré directement ici)
+    const sanctionsData = [
+      {
+        "catégorie": "Comportement",
+        "sous_catégorie": "Insulte",
+        "motif": "Injures racistes ou discriminatoires",
+        "punition": "Bannissement définitif"
+      },
+      {
+        "catégorie": "Comportement",
+        "sous_catégorie": "Insulte",
+        "motif": "Insultes graves (harcèlement)",
+        "punition": "Bannissement temporaire (7 jours)"
+      },
+      {
+        "catégorie": "Comportement",
+        "sous_catégorie": "Trolling",
+        "motif": "Spam répété après avertissement",
+        "punition": "Suspension 3 jours"
+      },
+      {
+        "catégorie": "Triche",
+        "sous_catégorie": "Cheats",
+        "motif": "Utilisation de scripts non autorisés",
+        "punition": "Bannissement définitif"
+      }
+      // Ajoute tous tes cas ici
+    ];
+
+    function renderTable(data) {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (data.length === 0) {
+        resultsDiv.innerHTML = '<p class="no-result">Aucune sanction trouvée.</p>';
+        return;
+      }
+
+      const categories = {};
+      data.forEach(s => {
+        if (!categories[s.catégorie]) categories[s.catégorie] = [];
+        categories[s.catégorie].push(s);
+      });
+
+      for (const cat in categories) {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'category';
+        catDiv.innerHTML = `<h3>${cat}</h3>`;
+        
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <tr>
+            <th>Sous-catégorie</th>
+            <th>Motif</th>
+            <th>Punition</th>
+          </tr>
+        `;
+        categories[cat].forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${item.sous_catégorie}</td>
+            <td>${item.motif}</td>
+            <td><strong style="color:#6a5af9;">${item.punition}</strong></td>
+          `;
+          table.appendChild(row);
+        });
+        catDiv.appendChild(table);
+        resultsDiv.appendChild(catDiv);
+      }
+    }
+
+    // Recherche dynamique
+    document.getElementById('searchSanctions').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = sanctionsData.filter(s =>
+        s.motif.toLowerCase().includes(query) ||
+        s.catégorie.toLowerCase().includes(query) ||
+        s.sous_catégorie.toLowerCase().includes(query) ||
+        s.punition.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    });
+
+    // Afficher tout au chargement
+    renderTable(sanctionsData);
+  </script>
+
+  <!-- Gestion du menu -->
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    if (hamburger) hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+
+    if (overlay) overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>

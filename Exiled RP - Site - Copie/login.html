@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connexion — Exiled RP [WL]</title>
+    <link rel="icon" type="image/png" href="logoex.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <style>
+    .auth-form {
+      background: rgba(18, 18, 26, 0.75);
+      padding: 2.2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(106, 90, 249, 0.3);
+      box-shadow: 0 0 15px rgba(106, 90, 249, 0.2);
+      backdrop-filter: blur(8px);
+      max-width: 500px;
+      margin: 0 auto;
+      animation: fadeInUp 1s ease-out;
+    }
+    .auth-form h2 { color: #6a5af9; margin-bottom: 1.3rem; font-size: 1.8rem; }
+    .auth-input {
+      width: 100%; padding: 0.95rem; margin: 0.7rem 0 1.3rem;
+      background: rgba(10, 10, 16, 0.7); border: 1px solid rgba(106, 90, 249, 0.4);
+      border-radius: 6px; color: #e0e0ff; font-size: 1.05rem; font-family: 'Inter', sans-serif;
+      outline: none;
+    }
+    .auth-input:focus { border-color: #6a5af9; box-shadow: 0 0 0 2px rgba(106, 90, 249, 0.4); }
+    .auth-form a { color: #6a5af9; text-decoration: none; }
+    .auth-form a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <main>
+    <section class="section">
+      <div class="auth-form">
+        <h2>🔐 Connexion Staff</h2>
+        <input type="email" id="email" placeholder="Email" class="auth-input" autocomplete="email" />
+        <input type="password" id="password" placeholder="Mot de passe" class="auth-input" autocomplete="current-password" />
+        <button onclick="signIn()" class="btn primary">Se connecter</button>
+
+        <p style="margin-top: 1.2rem; font-size: 0.95rem; color: #a9a9d6;">
+          🔒 Les inscriptions sont gérées par l'administration.<br>En cas de problème contacter Rise (rise.officiel).
+        </p>
+
+        <p style="font-size: 0.95rem; color: #a9a9d6;">
+          <a href="#" onclick="resetPassword(); return false;">Mot de passe oublié ?</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Exiled RP [WL] — Tous droits réservés.</p>
+  </footer>
+
+  <!-- Firebase COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcB45diMSO7rWWzp25EdqLHrhgENM7jj0",
+      authDomain: "marseille-rp-73905.firebaseapp.com",
+      projectId: "marseille-rp-73905",
+      storageBucket: "marseille-rp-73905.firebasestorage.app",
+      messagingSenderId: "633653493501",
+      appId: "1:633653493501:web:94210bcc5a99d6fd114894",
+      measurementId: "G-Q1S0XVRWPD"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    window.signIn = function() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) return alert('Veuillez remplir tous les champs.');
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => window.location.href = 'staff.html')
+        .catch((error) => {
+          let msg = error.message;
+          if (msg.includes('user-not-found')) msg = '📧 Compte introuvable.';
+          else if (msg.includes('wrong-password')) msg = '🔒 Mot de passe incorrect.';
+          else if (msg.includes('invalid-email')) msg = '📧 Email invalide.';
+          alert(msg);
+        });
+    };
+
+    window.resetPassword = function() {
+      const email = document.getElementById('email').value.trim();
+      if (!email) return alert('Entrez votre email.');
+      auth.sendPasswordResetEmail(email)
+        .then(() => alert('📧 Lien envoyé.'))
+        .catch(() => alert('📧 Aucun compte avec cet email.'));
+    };
+  </script>
+</body>
+</html>

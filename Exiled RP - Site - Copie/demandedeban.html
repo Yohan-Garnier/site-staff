@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bannissement - Exiled RP [WL]</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link rel="stylesheet" href="css/style.css" />
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <!-- Firebase COMPAT -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<!-- Auth Guard -->
+<script src="js/auth-guard.js"></script>
+
+<script>
+  // Initialiser la protection
+  protectPage((user) => {
+    console.log('Utilisateur connecté :', user.email);
+  });
+</script>
+</head>
+<body>
+
+  <!-- Hamburger & Sidebar -->
+  <div class="hamburger" id="hamburger">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="nav-brand">Exiled RP [WL]</div>
+      <button class="close-btn" id="close-sidebar">×</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="staff.html">Accueil</a>
+      <a href="serveurblacklist.html">Serveur BLACKLIST</a>
+      <a href="referentielsanction.html">Référentiel de sanction</a>
+      <a href="demandedeban.html">Demande de débannissement</a>
+      <a href="absence.html">Faire une absence</a>
+      <a href="sanction.html">Nouvelle sanction</a>
+      <a href="sanctionhistorique.html">Historique de sanction</a>
+      <a href="mnémotechnique.html">Mnémotechnique</a>
+      <a href="demission.html">Démission</a>
+      <a href="mon-compte.html"><strong>Mon compte</strong></a>
+    </nav>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+    <main>
+        <section class="section">
+            <div class="auth-form">
+                <div class="recruitment-header">
+                    <img src="header.png" alt="Exiled RP [WL]" />
+                </div>
+                <h2>Demande de bannissement - Exiled RP [WL]</h2>
+                <p class="recruitment-intro">
+                    Bienvenue sur le formulaire officiel de demande de bannissement d'Exiled RP [WL].
+                </p>
+
+                <p class="required-field-note">
+                    <span class="required-asterisk">*</span> Indique une question
+                    obligatoire
+                </p>
+                
+                <p><h1>Info joueur</h1></p>
+                <form id="accountRequestForm">
+                    <div class="form-group">
+                        <label for="plateforme">Discord ou Roblox<span class="required-asterisk">*</span></label>
+                        <input type="text" id="plateforme" class="auth-input" placeholder="Votre réponse" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="informationjoueur">Pseudo discord et/ou roblox<span class="required-asterisk">*</span></label>
+                        <input type="text" id="informationjoueur" class="auth-input" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="motif">Motif <span class="required-asterisk">*</span></label>
+                        <input type="text" id="motif" class="auth-input" placeholder="Votre réponse" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="preuves">Preuves (screenshots, vidéos... <strong>le lien</strong>) <span class="required-asterisk">*</span></label>
+                        <input type="text" id="preuves" class="auth-input" placeholder="Votre réponse" required /> 
+                    </div>
+
+                    <button type="submit" class="btn primary">Envoyer</button>
+                </form>
+
+                <div id="status"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Exiled RP [WL] — Tous droits réservés.</p>
+    </footer>
+
+  <!-- 🔥 Firebase Auth uniquement -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcB45diMSO7rWWzp25EdqLHrhgENM7jj0",
+      authDomain: "marseille-rp-73905.firebaseapp.com",
+      projectId: "marseille-rp-73905",
+      storageBucket: "marseille-rp-73905.firebasestorage.app",
+      messagingSenderId: "633653493501",
+      appId: "1:633653493501:web:94210bcc5a99d6fd114894"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById('user-display').textContent = user.email;
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+
+    window.signOut = () => {
+      auth.signOut().then(() => window.location.href = 'login.html');
+    };
+  </script>
+
+  <!-- Sidebar JS -->
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    if (hamburger) hamburger.addEventListener('click', () => {
+      sidebar.classList.add('active');
+      overlay.classList.add('active');
+      hamburger.style.display = 'none';
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+
+    if (overlay) overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+      hamburger.style.display = 'flex';
+    });
+  </script>
+
+    <script>
+        // Formulaire Discord Webhook
+        document.getElementById('accountRequestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Récupérer les éléments
+            const plateformeElement = document.getElementById('plateforme');
+            const informationjoueurElement = document.getElementById('informationjoueur');
+            const motifElement = document.getElementById('motif');
+            const preuvesElement = document.getElementById('preuves');
+
+            if (!plateformeElement || !informationjoueurElement || !motifElement || !preuvesElement) {
+                console.error("Un ou plusieurs champs sont manquants dans le formulaire.");
+                return;
+            }
+
+            const plateforme = plateformeElement.value;
+            const informationjoueur = informationjoueurElement.value;
+            const motif = motifElement.value;
+            const preuves = preuvesElement.value;
+
+            // Récupérer les infos du compte connecté
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                document.getElementById('status').innerHTML = '<p style="color: #dc3545;">❌ Vous devez être connecté pour envoyer ce formulaire.</p>';
+                return;
+            }
+
+            // Récupérer les infos Firestore
+            db.collection('users').doc(user.uid).get().then(doc => {
+              if (doc.exists) {
+                const userData = doc.data();
+                const userEmail = user.email;
+                const userUID = user.uid;
+                const username = userData.username || 'Aucun';
+                const discordId = userData.discordId || 'Aucun';
+                const pseudoRoblox = userData.pseudoRoblox || 'Aucun';
+                const grade = userData.grade || 'Aucun';
+                const createdAt = userData.createdAt ? userData.createdAt.toDate().toLocaleDateString() : 'Aucune';
+
+                // 🔥 REMPLACEZ CES VALEURS AVEC LES VOTRES !
+                const webhookURL = 'https://discord.com/api/webhooks/1435342452193103964/KmAc3YpvakkJ5QIOLxBUGOUFUiGwZ1u1WSB6pw_WUgM87qjn-UYuOkPzDFpWJgkzQJlX';
+                const roleID = '1435150278545506419';
+                const logsWebhookURL = 'https://discord.com/api/webhooks/1440759750739365998/brQgi-0X8VY7b6bP1AZpCCwc9luyL0M9jeShf8YufTWsibvqyXW9vV01DngaOOpueUms';
+
+                // Webhook principal (mentionne le rôle)
+                const payload = {
+                    content: `<@&${roleID}> Nouvelle demande de banissement !`,
+                    embeds: [{
+                        title: "📥 Nouvelle demande de bannissement reçu",
+                        fields: [
+                            { name: "👤 Pseudo Discord du STAFF", value: username, inline: true },
+                            { name: "🤖 Pseudo Roblox du STAFF", value: pseudoRoblox, inline: true },
+                            { name: "🎖️ Grade du STAFF", value: grade, inline: false },
+                            { name: "📧 Email du STAFF", value: userEmail, inline: false },
+                            { name: "🤖 ID Discord du STAFF", value: discordId, inline: false },
+                            { name: "📅 Date de création du compte", value: createdAt, inline: false },
+                            { name: "🌐 Plateforme (Discord ou Roblox)", value: plateforme, inline: false },
+                            { name: "👥 Informations du JOUEUR", value: informationjoueur, inline: false },
+                            { name: "⚠️ Motif", value: motif, inline: false },
+                            { name: "📸 Preuves", value: preuves, inline: false }
+                        ],
+                        color: 3381759,
+                        footer: { text: `Exiled RP [WL] • Réponse automatique • UID: ${userUID}` }
+                    }]
+                };
+
+                // Webhook de logs
+                const logPayload = {
+                  embeds: [{
+                    title: "📝 Nouvelle réponse de formulaire",
+                    fields: [
+                      { name: "👤 Pseudo Discord du STAFF", value: username, inline: true },
+                      { name: "🤖 Pseudo Roblox du STAFF", value: pseudoRoblox, inline: true },
+                      { name: "📧 Email du STAFF", value: userEmail, inline: true },
+                      { name: "🆔 UID", value: userUID, inline: false },
+                      { name: "📄 Formulaire", value: "Demande de bannissement", inline: false }
+                    ],
+                    color: 3381759,
+                    footer: { text: "Exiled RP [WL] • Logs automatiques" }
+                  }]
+                };
+
+                // Envoyer les deux webhooks
+                Promise.all([
+                  fetch(webhookURL, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(payload)
+                  }),
+                  fetch(logsWebhookURL, {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(logPayload)
+                  })
+                ])
+                .then(([response1, response2]) => {
+                  if (response1.ok && response2.ok) {
+                    document.getElementById('status').innerHTML = '<p style="color: #28a745;">✅ Votre réponse nous a été transmise.</p>';
+                    this.reset();
+                  } else {
+                    throw new Error('Erreur réseau ou webhook incorrect.');
+                  }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('status').innerHTML = '<p style="color: #dc3545;">❌ Erreur lors de l’envoi. Vérifiez votre connexion.</p>';
+                });
+              } else {
+                document.getElementById('status').innerHTML = '<p style="color: #dc3545;">❌ Données utilisateur manquantes.</p>';
+              }
+            });
+        });
+    </script>
+</body>
+</html>

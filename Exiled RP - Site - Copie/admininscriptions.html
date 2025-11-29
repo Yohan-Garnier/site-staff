@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Créer un compte</title>
+  <link rel="icon" type="image/png" href="logoex.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+  <style>
+    .admin-form {
+      background: rgba(18, 18, 26, 0.75);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(106, 90, 249, 0.3);
+      backdrop-filter: blur(8px);
+      max-width: 500px;
+      margin: 2rem auto;
+      color: #e0e0ff;
+    }
+    .admin-form input {
+      width: 100%; padding: 0.8rem; margin: 0.6rem 0;
+      background: rgba(10, 10, 16, 0.7);
+      border: 1px solid rgba(106, 90, 249, 0.4);
+      border-radius: 6px;
+      color: #e0e0ff;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn { margin-top: 1rem; }
+    #status { margin-top: 1rem; padding: 0.7rem; border-radius: 6px; text-align: center; }
+    .success { background: rgba(0,200,100,0.2); color: #80ffaa; }
+    .error { background: rgba(255,80,80,0.2); color: #ff8080; }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="admin-form">
+      <h2>🛠️ Créer un compte staff</h2>
+      <input type="password" id="adminCode" placeholder="Code d'admin" />
+      <input type="email" id="email" placeholder="Email du staff" />
+      <input type="password" id="password" placeholder="Mot de passe temporaire (min. 6 caractères)" />
+      <input type="text" id="username" placeholder="Nom d'utilisateur" />
+      <input type="text" id="discordId" placeholder="ID Discord" />
+      <input type="text" id="pseudoRoblox" placeholder="Pseudo Roblox" />
+      <input type="text" id="grade" placeholder="Grade" />
+      <button onclick="signUp()" class="btn primary">Créer le compte</button>
+      <div id="status"></div>
+    </div>
+  </main>
+
+  <!-- Firebase COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBcB45diMSO7rWWzp25EdqLHrhgENM7jj0",
+      authDomain: "marseille-rp-73905.firebaseapp.com",
+      projectId: "marseille-rp-73905",
+      storageBucket: "marseille-rp-73905.firebasestorage.app",
+      messagingSenderId: "633653493501",
+      appId: "1:633653493501:web:94210bcc5a99d6fd114894"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const ADMIN_CODE = 'Yohan2000!'; // 🔐 Code requis pour accéder à ce formulaire
+
+    window.signUp = function() {
+      const adminCode = document.getElementById('adminCode').value;
+      if (adminCode !== ADMIN_CODE) {
+        document.getElementById('status').innerHTML = '<p style="color: #ff8080;">❌ Code admin incorrect.</p>';
+        return;
+      }
+
+      const emailElement = document.getElementById('email');
+      const passwordElement = document.getElementById('password');
+      const usernameElement = document.getElementById('username');
+      const discordIdElement = document.getElementById('discordId');
+      const pseudoRobloxElement = document.getElementById('pseudoRoblox');
+      const gradeElement = document.getElementById('grade');
+      const statusElement = document.getElementById('status');
+
+      if (!emailElement || !passwordElement || !usernameElement || !discordIdElement || !pseudoRobloxElement || !gradeElement || !statusElement) {
+        console.error("Un ou plusieurs éléments sont manquants dans le formulaire.");
+        return;
+      }
+
+      const email = emailElement.value.trim();
+      const password = passwordElement.value;
+      const username = usernameElement.value.trim();
+      const discordId = discordIdElement.value.trim();
+      const pseudoRoblox = pseudoRobloxElement.value.trim();
+      const grade = gradeElement.value.trim();
+
+      statusElement.textContent = '';
+      statusElement.className = '';
+
+      if (!email || !password || !username || !discordId || !pseudoRoblox || !grade) {
+        statusElement.textContent = '⚠️ Veuillez remplir tous les champs.';
+        statusElement.className = 'error';
+        return;
+      }
+
+      if (password.length < 6) {
+        statusElement.textContent = '⚠️ Le mot de passe doit contenir au moins 6 caractères.';
+        statusElement.className = 'error';
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        statusElement.textContent = '⚠️ Adresse email invalide.';
+        statusElement.className = 'error';
+        return;
+      }
+
+      if (!isValidDiscordId(discordId)) {
+        statusElement.textContent = '⚠️ ID Discord invalide.';
+        statusElement.className = 'error';
+        return;
+      }
+
+      const btn = document.querySelector('.btn');
+      btn.disabled = true;
+      btn.textContent = 'Création en cours...';
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          const createdAt = firebase.firestore.FieldValue.serverTimestamp();
+          // Sauvegarder les données dans Firestore
+          return db.collection('users').doc(uid).set({
+            email: email,
+            username: username,
+            discordId: discordId,
+            pseudoRoblox: pseudoRoblox,
+            grade: grade,
+            mustChangePassword: true,
+            createdAt: createdAt
+          });
+        })
+        .then(() => {
+          statusElement.textContent = '✅ Compte et profil créés avec succès !';
+          statusElement.className = 'success';
+          emailElement.value = '';
+          passwordElement.value = '';
+          usernameElement.value = '';
+          discordIdElement.value = '';
+          pseudoRobloxElement.value = '';
+          gradeElement.value = '';
+
+          // 🔥 Envoyer un webhook Discord
+          sendWebhookLog('Nouveau compte créé', {
+            email: email,
+            username: username,
+            discordId: discordId,
+            pseudoRoblox: pseudoRoblox,
+            grade: grade,
+            uid: userCredential.user.uid
+          });
+        })
+        .catch((error) => {
+          let msg = error.message;
+          if (msg.includes('email-already-in-use')) {
+            msg = '📧 Cet email existe déjà.';
+          } else if (msg.includes('invalid-email')) {
+            msg = '📧 Adresse email invalide.';
+          } else if (msg.includes('weak-password')) {
+            msg = '🔒 Mot de passe trop faible.';
+          } else {
+            msg = 'Erreur inconnue : ' + error.code;
+          }
+          statusElement.textContent = '❌ ' + msg;
+          statusElement.className = 'error';
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = 'Créer le compte';
+        });
+    };
+
+    // Fonction utilitaire pour valider l'email
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    // Fonction utilitaire pour valider l'ID Discord (18 chiffres)
+    function isValidDiscordId(id) {
+      const re = /^\d{17,19}$/;
+      return re.test(id);
+    }
+
+    // Fonction pour envoyer un webhook Discord
+    function sendWebhookLog(action, data) {
+      const webhookURL = 'https://discord.com/api/webhooks/1440759750739365998/brQgi-0X8VY7b6bP1AZpCCwc9luyL0M9jeShf8YufTWsibvqyXW9vV01DngaOOpueUms';
+
+      const payload = {
+        embeds: [{
+          title: `📝 ${action}`,
+          fields: [
+            { name: "📧 Email", value: data.email, inline: true },
+            { name: "👤 Nom d'utilisateur", value: data.username, inline: true },
+            { name: "🤖 ID Discord", value: data.discordId, inline: false },
+            { name: "🎮 Pseudo Roblox", value: data.pseudoRoblox, inline: true },
+            { name: "🎖️ Grade", value: data.grade, inline: true },
+            { name: "🆔 UID", value: data.uid, inline: false }
+          ],
+          color: 3381759,
+          footer: { text: "Exiled RP [WL] • Logs automatiques" }
+        }]
+      };
+
+      fetch(webhookURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }).catch(err => console.error('Erreur webhook:', err));
+    }
+  </script>
+</body>
+</html>

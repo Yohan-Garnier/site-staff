@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demande de compte - Exiled RP [WL]</title>
+    <link rel="icon" type="image/png" href="logoex.png">
+    <link rel="stylesheet" href="css/style.css" />
+    <meta property="og:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta property="og:description" content="Rejoignez Exiled RP [WL], le serveur de roleplay français avec une équipe active, des événements et un univers immersif." />
+  <meta property="og:image" content="https://exiled-rp.netlify.app/header.png" />
+  <meta property="og:url" content="https://exiled-rp.netlify.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Exiled RP [WL]" />
+
+  <!-- 🔥 Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exiled RP [WL] — Serveur de Roleplay Français" />
+  <meta name="twitter:description" content="Rejoignez Exiled RP [WL] — un univers de roleplay français immersif, avec staff et une communauté active." />
+  <meta name="twitter:image" content="https://exiled-rp.netlify.app/header.png" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">Exiled RP [WL]</div>
+        <div class="nav-links">
+            <a href="accueil.html">Accueil</a>
+            <a href="regles.html">Règles</a>
+            <a href="personnage.html">Personnage</a>
+            <a href="equipe.html">Notre Equipe</a>
+            <a href="boutique.html">Boutique</a>
+            <a href="recutement staff.html">Nous rejoindre</a>
+            <a href="login.html">Se connecter</a>
+            <a href="demandedecompte.html">S'inscrire</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="section">
+            <div class="auth-form">
+                <div class="recruitment-header">
+                    <img src="header.png" alt="Exiled RP [WL]" />
+                </div>
+                <h2>Demande de compte - Exiled RP [WL]</h2>
+                <p class="recruitment-intro">
+                    Bienvenue sur le formulaire officiel de demande de compte.
+                </p>
+                <p class="recruitment-intro">
+                    Pour être éligible à la création de compte il faut faire partie de
+                    notre équipe.
+                </p>
+
+                <p class="required-field-note">
+                    <span class="required-asterisk">*</span> Indique une question
+                    obligatoire
+                </p>
+
+                <form id="accountRequestForm">
+                    <div class="form-group">
+                        <label for="pseudoDiscord">Pseudo discord <span class="required-asterisk">*</span></label>
+                        <input type="text" id="pseudoDiscord" class="auth-input" placeholder="Votre réponse" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="grade">Grade <span class="required-asterisk">*</span></label>
+                        <input type="text" id="grade" class="auth-input" placeholder="Votre réponse" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Adresse mail <span class="required-asterisk">*</span></label>
+                        <input type="email" id="email" class="auth-input" placeholder="Votre réponse" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date <span class="required-asterisk">*</span></label>
+                        <input type="date" id="date" class="auth-input" required />
+                    </div>
+
+                    <button type="submit" class="btn primary">Envoyer</button>
+                </form>
+
+                <div id="status"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Exiled RP [WL] — Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        document.getElementById('accountRequestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const pseudoDiscord = document.getElementById('pseudoDiscord').value;
+            const grade = document.getElementById('grade').value;
+            const email = document.getElementById('email').value;
+            const date = document.getElementById('date').value;
+
+            // 🔥 REMPLACEZ CES VALEURS AVEC LES VOTRES !
+            const webhookURL = 'https://discord.com/api/webhooks/1436066246972936307/sD8L9z-ZGJ0k68d1YpkAhSjeC2YPafUYUkafUVhiinDgVFmA9ywZxEk5QOFajHmJ1lqX';
+            const roleID = '1436066480205598740';
+
+            const payload = {
+                content: `<@&${roleID}> Nouvelle demande de compte !`,
+                embeds: [{
+                    title: "📥 Nouvelle demande de compte",
+                    fields: [
+                        { name: "👤 Pseudo Discord", value: pseudoDiscord, inline: true },
+                        { name: "🛡️ Grade", value: grade, inline: true },
+                        { name: "📧 Email", value: email, inline: false },
+                        { name: "📅 Date", value: date, inline: false }
+                    ],
+                    color: 3381759,
+                    footer: { text: "Exiled RP [WL] • Réponse automatique" }
+                }]
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('status').innerHTML = '<p style="color: #28a745;">✅ Votre réponse nous a été transmise.</p>';
+                    this.reset();
+                } else {
+                    throw new Error('Erreur réseau ou webhook incorrect.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('status').innerHTML = '<p style="color: #dc3545;">❌ Erreur lors de l’envoi. Vérifiez votre connexion.</p>';
+            });
+        });
+    </script>
+</body>
+</html>
